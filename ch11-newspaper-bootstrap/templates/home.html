@@ -1,11 +1,40 @@
 {% extends "base.html" %}
-
-{% block title %}Home{% endblock title %}
+{% block title %}Tutoring Hours{% endblock title %}
 
 {% block content %}
-{% if user.is_authenticated %}
-<p>Hi {{ user.username }}! You are {{ user.age }} years old.</p>
-{% else %}
-<p>You are not logged in</p>
-{% endif %}
+<div class="hero mb-4 shadow-sm">
+  <h1 class="display-6 fw-bold mb-1">Tutoring Hours</h1>
+  <p class="lead mb-0"><i class="bi bi-geo-alt-fill"></i> Find a TA in the CS Fishbowl</p>
+</div>
+
+{% regroup hour_list by get_day_display as day_list %}
+<div class="row g-4">
+  {% for day in day_list %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card day-card shadow-sm h-100">
+        <div class="card-header">{{ day.grouper }}</div>
+        <div class="card-body d-grid gap-3">
+          {% for hour in day.list %}
+            <div class="slot ps-3">
+              <div class="fw-semibold">
+                <i class="bi bi-clock"></i>
+                {{ hour.start_time|time:"g:i A" }} – {{ hour.end_time|time:"g:i A" }}
+              </div>
+              <a href="{{ hour.ta.get_absolute_url }}" class="text-decoration-none">
+                {{ hour.ta.get_full_name|default:hour.ta.username }}
+              </a>
+              <div class="mt-1">
+                {% for course in hour.ta.courses.all %}
+                  <span class="badge rounded-pill course-badge">{{ course }}</span>
+                {% endfor %}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <div class="col"><div class="alert alert-info">No hours posted yet.</div></div>
+  {% endfor %}
+</div>
 {% endblock content %}
