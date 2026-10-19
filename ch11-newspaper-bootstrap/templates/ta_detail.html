@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}{{ ta.get_full_name|default:ta.username }}{% endblock title %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow-sm border-0 rounded-4 my-3">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center mb-3">
+          <i class="bi bi-person-circle display-4 text-primary me-3"></i>
+          <div>
+            <h1 class="h3 mb-0">{{ ta.get_full_name|default:ta.username }}</h1>
+            <span class="text-muted">Teaching Assistant</span>
+          </div>
+        </div>
+
+        {% if ta.bio %}<p>{{ ta.bio }}</p>{% endif %}
+
+        <h5 class="mt-4">Can tutor</h5>
+        {% for course in ta.courses.all %}
+          <span class="badge rounded-pill course-badge fs-6">{{ course }}</span>
+        {% empty %}
+          <span class="text-muted">No courses listed</span>
+        {% endfor %}
+
+        <h5 class="mt-4">Hours</h5>
+        <ul class="list-group list-group-flush">
+          {% for hour in ta.hours.all %}
+            <li class="list-group-item">
+              <strong>{{ hour.get_day_display }}</strong>
+              {{ hour.start_time|time:"g:i A" }} – {{ hour.end_time|time:"g:i A" }}
+            </li>
+          {% empty %}
+            <li class="list-group-item text-muted">No hours posted yet</li>
+          {% endfor %}
+        </ul>
+      </div>
+      <div class="card-footer bg-transparent border-0 px-4 pb-4">
+        <a href="{% url 'home' %}" class="btn btn-outline-primary btn-sm">← Back to all hours</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
